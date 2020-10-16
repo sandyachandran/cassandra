@@ -1,0 +1,110 @@
+1.created table product
+
+token@cqlsh:killervideo> CREATE TABLE product(product_id int,productname text,quantity int,price int,category text ,primary KEY (product_id));
+
+2.describe table
+
+
+CREATE TABLE killervideo.product (
+    product_id int PRIMARY KEY,
+    category text,
+    price int,
+    productname text,
+    quantity int
+) WITH additional_write_policy = '99PERCENTILE'
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+AND compression = {'chunk_length_in_kb': '64', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND crc_check_chance = 1.0
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND nodesync = {'enabled': 'true', 'incremental': 'true'}
+    AND read_repair = 'BLOCKING'
+    AND speculative_retry = '99PERCENTILE';
+
+token@cqlsh:killervideo> 
+
+
+
+3.insert 
+
+
+token@cqlsh:killervideo> insert INTO product(product_id,productname,quantity,price,category) VALUES (1200,'sugar',2,40,'kitchen');
+token@cqlsh:killervideo> insert INTO product(product_id,productname,quantity,price,category) VALUES (1300,'milk',1,20,'kitchen');
+token@cqlsh:killervideo> insert INTO product(product_id,productname,quantity,price,category) VALUES (1400,'butter',5,100,'kitchen');
+token@cqlsh:killervideo> insert INTO product(product_id,productname,quantity,price,category) VALUES (1600,'rise',1,1000,'kitchen');
+token@cqlsh:killervideo> insert INTO product(product_id,productname,quantity,price,category) VALUES (2000,'mobile',1,24000,'electronics');
+token@cqlsh:killervideo> insert INTO product(product_id,productname,price,category) VALUES (2000,'power bank',5000,'electronics'); -->already existing primary key upserting  
+token@cqlsh:killervideo> insert INTO product(product_id,productname,quantity,price,category) VALUES (3000,'car',1,300000,'vehicle');
+token@cqlsh:killervideo> insert INTO product(product_id,productname,quantity,price,category) VALUES (4000,'Bike',1,100000,'vehicle');
+token@cqlsh:killervideo> insert INTO product(product_id,productname,quantity,price,category) VALUES (5000,'Van',1,200000,'vehicle');
+token@cqlsh:killervideo> insert INTO product(product_id,productname,quantity,price,category) VALUES (1000,'rose',6,200,'plants');
+token@cqlsh:killervideo> 
+
+
+4 Read
+
+
+token@cqlsh:killervideo> select * from product ;
+
+ product_id | category    | price  | productname | quantity
+------------+-------------+--------+-------------+----------
+       5000 |     vehicle | 200000 |         Van |        1
+       4000 |     vehicle | 100000 |        Bike |        1
+       3000 |     vehicle | 300000 |         car |        1
+       1200 |     kitchen |     40 |       sugar |        2
+       2000 | electronics |   5000 |  power bank |        1
+       1400 |     kitchen |    100 |      butter |        5
+       1600 |     kitchen |   1000 |        rise |        1
+       1300 |     kitchen |     20 |        milk |        1
+       1000 |      plants |    200 |        rose |        6
+
+(9 rows)
+token@cqlsh:killervideo
+
+
+5.update
+token@cqlsh:killervideo> UPDATE product SET productname='Jasmine' where product_id=1000;
+token@cqlsh:killervideo> UPDATE product SET category='Flowers' where product_id=1000;
+
+token@cqlsh:killervideo> select * from product;
+
+ product_id | category    | price  | productname | quantity
+------------+-------------+--------+-------------+----------
+       5000 |     vehicle | 200000 |         Van |        1
+       4000 |     vehicle | 100000 |        Bike |        1
+       3000 |     vehicle | 300000 |         car |        1
+       1200 |     kitchen |     40 |       sugar |        2
+       2000 | electronics |   5000 |  power bank |        1
+       1400 |     kitchen |    100 |      butter |        5
+       1600 |     kitchen |   1000 |        rise |        1
+       1300 |     kitchen |     20 |        milk |        1
+       1000 |     Flowers |    200 |     Jasmine |        6 -->category and product name is updated
+
+(9 rows)
+token@cqlsh:killervideo> 
+
+6.delete
+
+token@cqlsh:killervideo> DELETE  category from product where product_id =1400;
+token@cqlsh:killervideo> select * from product ;
+
+ product_id | category    | price  | productname | quantity
+------------+-------------+--------+-------------+----------
+       5000 |     vehicle | 200000 |         Van |        1
+       4000 |     vehicle | 100000 |        Bike |        1
+       3000 |     vehicle | 300000 |         car |        1
+       1200 |     kitchen |     40 |       sugar |        2
+       2000 | electronics |   5000 |  power bank |        1
+       1400 |        null |    100 |      butter |        5 -->deleted category for product_id=1400
+       1600 |     kitchen |   1000 |        rise |        1
+       1300 |     kitchen |     20 |        milk |        1
+       1000 |     Flowers |    200 |     Jasmine |        6
+
+(9 rows)
+token@cqlsh:killervideo> 
